@@ -34,18 +34,19 @@ namespace Mercearia_Produtos_API.Repository
             return ListaProdutos.Where(filter).ToList();
         }
 
-        public void AddProduto(Produto produto)
+        public int AddProduto(Produto produto)
         {
             Id++;
             produto.ID = Id;
             ListaProdutos.Add(produto);
+            return Id;
         }
 
-        public void UpdateProduto(Produto produto)
+        public bool UpdateProduto(Produto produto)
         {
             if (GetById(produto.ID) == null)
             {
-                return;
+                return false;
             }
 
             foreach (Produto produtoUpdate in ListaProdutos.Where(L => L.ID == produto.ID))
@@ -58,11 +59,13 @@ namespace Mercearia_Produtos_API.Repository
                 produtoUpdate.quantEstoque = produto.quantEstoque;
 
             }
+
+            return true;
         }
 
-        public void DeleteProdutoById(int id)
+        public long DeleteProdutoById(int id)
         {
-            ListaProdutos.RemoveAll(L => L.ID == id);
+            return ListaProdutos.RemoveAll(L => L.ID == id);
         }
     }
 }

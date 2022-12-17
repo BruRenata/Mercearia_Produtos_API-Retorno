@@ -35,18 +35,19 @@ namespace Mercearia_Produtos_API.Repository
             return ListaClientes.Where(filter).ToList();
         }
 
-        public void AddCliente(Cliente cliente)
+        public int AddCliente(Cliente cliente)
         {
             Id++;
             cliente.ID = Id;
             ListaClientes.Add(cliente);
+            return Id;
         }
 
-        public void UpdateCliente(Cliente cliente)
+        public bool UpdateCliente(Cliente cliente)
         {
             if (GetById(cliente.ID) == null)
             {
-                return;
+                return false;
             }
 
             foreach(Cliente clientUpdate in ListaClientes.Where(L => L.ID == cliente.ID))
@@ -55,11 +56,13 @@ namespace Mercearia_Produtos_API.Repository
                 clientUpdate.dataNascimento = cliente.dataNascimento;
                 clientUpdate.enderecoCliente = cliente.enderecoCliente;
             }
+
+            return true;
         }
 
-        public void DeleteClienteById(int id)
+        public long DeleteClienteById(int id)
         {
-            ListaClientes.RemoveAll(L => L.ID == id);
+            return ListaClientes.RemoveAll(L => L.ID == id);
         }
     }
 }

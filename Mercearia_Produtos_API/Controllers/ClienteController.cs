@@ -1,49 +1,99 @@
 ﻿using Mercearia_Produtos_API.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Mercearia_Produtos_API.Controllers
 {
-    public class ClienteController
+    public class ClienteController : ControllerBase
     {
         private ClienteRepository clienteRepository = new ClienteRepository();
 
         [HttpGet]
         [Route("[controller]")]
-        public IEnumerable<Cliente> GetAll()
+        public IActionResult GetAll()
         {
-            return clienteRepository.GetAll();
+            try
+            {
+                return Ok(clienteRepository.GetAll());
+            }
+            catch(Exception e)
+            {
+                return BadRequest(new Resposta(400, e.Message));
+            }
         }
 
         [HttpGet]
         [Route("[controller]/{id}")]
-        public Cliente Get(int id)
+        public IActionResult Get(int id)
         {
-            return clienteRepository.GetById(id);
+            try
+            {
+                Cliente cliente = clienteRepository.GetById(id);
+                if (cliente == null)
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return Ok(cliente);
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new Resposta(400, e.Message));
+            }
+
         }
 
         [HttpPost]
         [Route("[controller]")]
-        public void Create([FromBody] Cliente cliente)
+        public IActionResult Create([FromBody] Cliente cliente)
         {
-            clienteRepository.AddCliente(cliente);
+            try
+            {
+                int id = clienteRepository.AddCliente(cliente);
+                return Ok(new Resposta(200, $"Cliente Cadastrado com id: {id}"));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new Resposta(400, e.Message));
+            }
         }
 
         [HttpPut]
         [Route("[controller]")]
-        public void Update([FromBody] Cliente cliente)
+        public IActionResult Update([FromBody] Cliente cliente)
         {
-            clienteRepository.UpdateCliente(cliente);   
+            try
+            {
+                if (clienteRepository.UpdateCliente(cliente))
+                {
+                    return Ok(new Resposta(200, "Produto Atualizado."));
+                }
+                else
+                {
+                    return NoContent();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new Resposta(400, e.Message));
+            }
         }
 
         [HttpDelete]
         [Route("[controller]/{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
-            clienteRepository.DeleteClienteById(id);
+            try
+            {
+                long qtdDeletados = clienteRepository.DeleteClienteById(id);
+                return Ok(new Resposta(200, $"Produtos Deletados: {qtdDeletados}"));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new Resposta(400, e.Message));
+            }
         }
     }
 
